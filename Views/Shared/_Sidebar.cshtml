@@ -1,0 +1,51 @@
+﻿@model List<vroom.Models.Motorcycle>
+
+@{
+    var featured = (Model ?? new List<vroom.Models.Motorcycle>()).Take(3).ToList();
+}
+
+<aside id="sidebar" class="pt-3">
+    <div class="card mb-4 promo-card text-center">
+        <div class="card-body">
+            <h5 class="card-title mb-2">გატესტეთ მოტოციკლი</h5>
+            <a href="@Url.Action("About", "Home")" class="btn btn-primary w-100">დაჯავშვნა</a>
+        </div>
+    </div>
+
+    <div class="card mb-4 featured-card">
+        <div class="card-body">
+            <h6 class="mb-3">პოპულარული მოტოები</h6>
+            @if (featured.Count == 0)
+            {
+                <div class="text-muted">არ არის შემოთავაზებული მოტოები</div>
+            }
+            else
+            {
+                foreach (var bike in featured)
+                {
+                    <div class="d-flex align-items-center mb-3 featured-item">
+                        <img src="@bike.ImageUrl" class="me-3 featured-thumb rounded" alt="@($"{bike.Make} {bike.Model}")" loading="lazy" />
+                        <div>
+                            <div class="fw-bold">@($"{bike.Make} {bike.Model}")</div>
+                            <small class="text-muted">@($"₾{bike.Price.ToString("F0")} • {bike.Year}")</small>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="card mb-4 newsletter-card">
+        <div class="card-body">
+            <h6 class="mb-2">ჩაეწერე სიახლეების მისაღებად</h6>
+            <p class="text-muted small">მოიპოვე განსაკუთრებული შეთავაზებები და გაიგე ახლადმამატებული მოტოებზე.</p>
+            <form id="newsletterForm" method="post" action="#" onsubmit="return false;">
+                <div class="mb-2">
+                    <input type="email" class="form-control" id="newsletterEmail" placeholder="იმეილი" required />
+                </div>
+                <button type="submit" class="btn btn-outline-primary w-100">გამოწერა</button>
+            </form>
+        </div>
+    </div>
+
+</aside>

@@ -1,0 +1,205 @@
+﻿@model List<vroom.Models.Motorcycle>
+
+@{
+    ViewData["Title"] = "მოტო სამყარო";
+    var motorcycles = Model as List<vroom.Models.Motorcycle> ?? new();
+    var categories = new[] { "კირშინელი", "სპორტული", "ენდურო", "ბობერი", "სტრიტური" };
+    var selectedCategory = ViewData["Category"] as string;
+}
+
+<style>
+    .hero-banner {
+        position: relative;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .hero-overlay {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 0;
+        min-height: 320px;
+        background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0.08) 100%);
+        overflow: hidden;
+    }
+
+    .hero-overlay::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.06), transparent 25%);
+        pointer-events: none;
+    }
+
+    .hero-overlay .container { position: relative; z-index: 2; }
+
+    .hero-title {
+        font-size: 2.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+        margin-bottom: 0.5rem;
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-subtitle {
+        font-size: 1.125rem;
+        color: #ffffff;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+        display: block;
+        margin-top: 1.2rem;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 1.2rem 2rem;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    @@media (min-width: 992px) {
+        .hero-title { font-size: 3.5rem; }
+        .hero-subtitle { font-size: 1.25rem; }
+    }
+</style>
+
+<div class="hero-banner" style="background-image: url('https://images4.alphacoders.com/119/thumb-1920-1190133.jpg');">
+    <div class="hero-overlay">
+        <div class="container text-center text-white">
+            <h1 class="hero-title">მოტო სამყარო</h1>
+            <p class="hero-subtitle">გააკეთე შენი ოცნებების წრე — შეიძინე ორბორბლიანი მეგობარი, საუკეთესო ფასებით.</p>
+        </div>
+    </div>
+</div>
+
+<div id="listings" class="container">
+    <div class="row">
+        <main class="col-12 col-lg-8">
+            <h1 class="mb-4">შეიძინეთ მოტოციკლი 🏍️</h1>
+
+            <div class="mb-5">
+                <h5 class="mb-3">გაფილრტე კატეგორია:</h5>
+                <div class="btn-group flex-wrap" role="group">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")">
+                        წელი
+                    </a>
+                    @foreach (var category in categories)
+                    {
+                        <a href="@Url.Action("Category", "Home", new { name = category })" 
+                           class="btn btn-outline-primary @(selectedCategory == category ? "active" : "")">
+                            @category
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                @if (motorcycles.Count > 0)
+                {
+                    foreach (var bike in motorcycles)
+                    {
+                        <div class="col-md-6 col-lg-6 col-xl-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <img src="@bike.ImageUrl" class="card-img-top" alt="@bike.Make @bike.Model">
+                                <div class="card-body">
+                                    <h5 class="card-title">@bike.Make @bike.Model</h5>
+                                    <p class="card-text text-muted">@bike.Year</p>
+                                    <p class="card-text">
+                                        <span class="badge bg-primary">@bike.Category</span>
+                                    </p>
+                                    <h6 class="text-success">₾@bike.Price.ToString("F2")</h6>
+                                </div>
+                                <div class="card-footer bg-white">
+                                    <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#detailsModal@(bike.Id)">დეტალურად</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="detailsModal@(bike.Id)" tabindex="-1" aria-labelledby="detailsLabel@(bike.Id)" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="detailsLabel@(bike.Id)">@bike.Make @bike.Model - @bike.Year</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <img src="@bike.ImageUrl" class="img-fluid rounded" alt="@bike.Make @bike.Model">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h4>ძირითადი ინფორმაცია</h4>
+                                                <div class="specs-grid">
+                                                    <div class="spec-item">
+                                                        <div class="spec-label">კატეგორია</div>
+                                                        <div class="spec-value">@bike.Category</div>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <div class="spec-label">წელი</div>
+                                                        <div class="spec-value">@bike.Year</div>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <div class="spec-label">ფასი</div>
+                                                        <div class="spec-value">₾@bike.Price.ToString("F2")</div>
+                                                    </div>
+                                                    <div class="spec-item">
+                                                        <div class="spec-label">მწარმოებელი</div>
+                                                        <div class="spec-value">@bike.Make</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <h4 class="mt-4 mb-3">ზუსტი ტექნიკური მახასიათებლები</h4>
+                                        <div class="specs-grid">
+                                            <div class="spec-item">
+                                                <div class="spec-label">კუბატურა</div>
+                                                <div class="spec-value">@bike.Engine</div>
+                                            </div>
+                                            <div class="spec-item">
+                                                <div class="spec-label">ცხენისძალა / კილოვატები</div>
+                                                <div class="spec-value">@bike.Horsepower</div>
+                                            </div>
+                                            <div class="spec-item">
+                                                <div class="spec-label">თორქი</div>
+                                                <div class="spec-value">@bike.Torque</div>
+                                            </div>
+                                            <div class="spec-item">
+                                                <div class="spec-label">საწვავის ავზი</div>
+                                                <div class="spec-value">@bike.FuelCapacity</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">დახურვა</button>
+                                        <button type="button" class="btn btn-primary">შეძეთა</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            სამწუხაროდ ამჟამად ამ კატეგორიის მოტოციკლი არ არის მარაგში.
+                        </div>
+                    </div>
+                }
+            </div>
+        </main>
+
+        <div class="col-12 col-lg-4 d-none d-lg-block">
+            @await Html.PartialAsync("_Sidebar", Model)
+        </div>
+    </div>
+</div>
