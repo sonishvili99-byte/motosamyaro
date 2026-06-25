@@ -1,0 +1,92 @@
+﻿@model vroom.Models.Motorcycle
+
+@{
+    ViewData["Title"] = "მოტოციკლის რედაქტირება";
+    var categories = new[] { "კრუიზერი", "სპორტი", "ენდურო", "ბობერი", "სტრიტი" };
+    var galleryRaw = ViewBag.GalleryImagesRaw as string ?? string.Join("\n", Model.GalleryImages ?? new List<string>());
+}
+
+<div class="container mt-4" style="max-width:780px;">
+    <h1 class="mb-4">&#x270F; მოტოციკლის რედაქტირება</h1>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div class="card p-4">
+        <form method="post" action="@Url.Action("EditMotorcycle", "Admin", new { id = Model.Id })">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">მარკა *</label>
+                    <input type="text" name="Make" value="@Model.Make" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">მოდელი *</label>
+                    <input type="text" name="Model" value="@Model.Model" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">წელი *</label>
+                    <input type="number" name="Year" value="@Model.Year" class="form-control" min="1900" max="2100" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">კატეგორია *</label>
+                    <select name="Category" class="form-select" required>
+                        @foreach (var cat in categories)
+                        {
+                            <option value="@cat" selected="@(Model.Category == cat ? "selected" : null)">@cat</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">ფასი (&#x20BE;) *</label>
+                    <input type="number" name="Price" value="@Model.Price.ToString("F2")" class="form-control" step="0.01" min="0" required />
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">მთავარი სურათის URL *</label>
+                    <input type="url" name="ImageUrl" value="@Model.ImageUrl" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">ძრავა *</label>
+                    <input type="text" name="Engine" value="@Model.Engine" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">ცხენისძალა *</label>
+                    <input type="text" name="Horsepower" value="@Model.Horsepower" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">თორქი *</label>
+                    <input type="text" name="Torque" value="@Model.Torque" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">საწვავის ავზი *</label>
+                    <input type="text" name="FuelCapacity" value="@Model.FuelCapacity" class="form-control" required />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">მაქს. სიჩქარე *</label>
+                    <input type="text" name="TopSpeed" value="@Model.TopSpeed" class="form-control" required />
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold">გალერეის სურათები</label>
+                    <textarea name="galleryImagesRaw" class="form-control" rows="4">@galleryRaw</textarea>
+                    <div class="form-text">თითო URL ახალ სტრიქონზე</div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">&#x1F4BE; შენახვა</button>
+                <a href="@Url.Action("Motorcycles", "Admin")" class="btn btn-secondary">გაუქმება</a>
+            </div>
+        </form>
+    </div>
+</div>

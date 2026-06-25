@@ -1,0 +1,113 @@
+﻿@model List<vroom.Models.Order>
+
+@{
+    ViewData["Title"] = "ადმინი - დაშბორდი";
+}
+
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">მთავარი დაშბორდი</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">სულ შეკვეთები</h5>
+                    <p class="card-text display-4">@ViewBag.TotalOrders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">მოცდალი შეკვეთები</h5>
+                    <p class="card-text display-4">@ViewBag.PendingOrders</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">სულ მომხმარებლები</h5>
+                    <p class="card-text display-4">@ViewBag.TotalUsers</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">სულ. შემოსავალი</h5>
+                    <p class="card-text display-4">₾@ViewBag.TotalRevenue.ToString("F0")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card" style="border-left:4px solid #00ada5;">
+                <div class="card-body">
+                    <h5 class="card-title">🏍️ მოტოციკლები</h5>
+                    <p class="card-text display-4">@ViewBag.TotalMotorcycles</p>
+                    <a href="@Url.Action("Motorcycles", "Admin")" class="btn btn-sm btn-outline-primary mt-1">მართვა</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">ბოლო შეკვეთები</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>მომხმარებელი</th>
+                                <th>თარიღი</th>
+                                <th>ფასი</th>
+                                <th>სტატუსი</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td>#@order.Id</td>
+                                    <td>@order.User?.FullName</td>
+                                    <td>@order.OrderDate.ToString("dd.MM.yyyy")</td>
+                                    <td>₾@order.TotalPrice.ToString("F2")</td>
+                                    <td>
+                                        <span class="badge bg-info">@order.Status</span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("OrderDetails", "Admin", new { id = order.Id })" class="btn btn-sm btn-primary">დეტალები</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">სწრაფი ბმულები</h5>
+                </div>
+                <div class="card-body">
+                    <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline-primary w-100 mb-2">შეკვეთები</a>
+                    <a href="@Url.Action("Users", "Admin")" class="btn btn-outline-primary w-100 mb-2">მომხმარებლები</a>
+                    <a href="@Url.Action("Motorcycles", "Admin")" class="btn btn-outline-primary w-100 mb-2">🏍️ მოტოციკლები</a>
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary w-100">მთავარი გვერდი</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

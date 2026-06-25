@@ -1,0 +1,89 @@
+﻿@model vroom.ViewModels.ProfileViewModel
+
+@{
+    ViewData["Title"] = "პროფილი";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="mb-4">პირადი პროფილი</h2>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" asp-action="UpdateProfile">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">ელფოსტა</label>
+                            <input asp-for="Email" type="email" class="form-control" disabled />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">სახელი და გვარი</label>
+                            <input asp-for="FullName" type="text" class="form-control" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">ტელეფონის ნომერი</label>
+                            <input asp-for="PhoneNumber" type="tel" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">მისამართი</label>
+                            <input asp-for="Address" type="text" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="City" class="form-label">ქალაქი</label>
+                                <input asp-for="City" type="text" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PostalCode" class="form-label">საფოსტო კოდი</label>
+                                <input asp-for="PostalCode" type="text" class="form-control" />
+                                <span asp-validation-for="PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">პროფილის განახლება</button>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">მთავარი</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">პროფილის მართვა</h5>
+                </div>
+                <div class="card-body">
+                    <a href="@Url.Action("MyOrders", "Account")" class="btn btn-outline-primary w-100 mb-2">ჩემი შეკვეთები</a>
+                    <a href="@Url.Action("MyTestRides", "TestRide")" class="btn btn-outline-primary w-100 mb-2">ჩემი ტესტ რაიდები</a>
+                    <a href="@Url.Action("Index", "Cart")" class="btn btn-outline-primary w-100 mb-2">ჩემი კალათა</a>
+                    <form method="post" asp-action="Logout" class="d-inline w-100">
+                        <button type="submit" class="btn btn-danger w-100">გამოსვლა</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

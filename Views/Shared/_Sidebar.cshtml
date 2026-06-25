@@ -1,14 +1,26 @@
 ﻿@model List<vroom.Models.Motorcycle>
 
 @{
-    var featured = (Model ?? new List<vroom.Models.Motorcycle>()).Take(3).ToList();
+    var allMotorcycles = ViewData["AllMotorcycles"] as List<vroom.Models.Motorcycle> ?? Model ?? new List<vroom.Models.Motorcycle>();
+    var featured = allMotorcycles
+        .OrderBy(x => Guid.NewGuid())
+        .Take(3)
+        .ToList();
 }
 
 <aside id="sidebar" class="pt-3">
+
     <div class="card mb-4 promo-card text-center">
         <div class="card-body">
-            <h5 class="card-title mb-2">გატესტეთ მოტოციკლი</h5>
-            <a href="@Url.Action("About", "Home")" class="btn btn-primary w-100">დაჯავშვნა</a>
+            <h5 class="card-title mb-2">მოტოციკლის გატესტვა</h5>
+            @if (User.Identity?.IsAuthenticated ?? false)
+            {
+                <button class="btn btn-primary w-100 btn-cta-pulse" data-bs-toggle="modal" data-bs-target="#testRideModalSidebar">დაჯავშვნა</button>
+            }
+            else
+            {
+                <a href="@Url.Action("Login", "Account")" class="btn btn-primary w-100">შემოსვლა</a>
+            }
         </div>
     </div>
 
@@ -17,11 +29,11 @@
             <h6 class="mb-3">პოპულარული მოტოები</h6>
             @if (featured.Count == 0)
             {
-                <div class="text-muted">არ არის შემოთავაზებული მოტოები</div>
+                <div class="text-muted small">ამჟამად ვერ მოიძებნა</div>
             }
             else
             {
-                foreach (var bike in featured)
+                @foreach (var bike in featured)
                 {
                     <div class="d-flex align-items-center mb-3 featured-item">
                         <img src="@bike.ImageUrl" class="me-3 featured-thumb rounded" alt="@($"{bike.Make} {bike.Model}")" loading="lazy" />
@@ -37,15 +49,55 @@
 
     <div class="card mb-4 newsletter-card">
         <div class="card-body">
-            <h6 class="mb-2">ჩაეწერე სიახლეების მისაღებად</h6>
-            <p class="text-muted small">მოიპოვე განსაკუთრებული შეთავაზებები და გაიგე ახლადმამატებული მოტოებზე.</p>
+            <h6 class="mb-2">გამოიწერეთ ჩვენი გვერდი</h6>
+            <p class="text-muted small">მიიღეთ განახლებული ინფორმაცია ყველა ახალი მოტოციკლებისა და სპეციალური შეთავაზებების შესახებ.</p>
             <form id="newsletterForm" method="post" action="#" onsubmit="return false;">
                 <div class="mb-2">
-                    <input type="email" class="form-control" id="newsletterEmail" placeholder="იმეილი" required />
+                    <input type="email" class="form-control" id="newsletterEmail" placeholder="თქვენი ელფოსტა" required />
                 </div>
                 <button type="submit" class="btn btn-outline-primary w-100">გამოწერა</button>
             </form>
         </div>
     </div>
 
+    <div class="card mb-4 why-card">
+        <div class="card-body">
+            <h6 class="mb-3">რატომ ჩვენ?</h6>
+            <ul class="why-list">
+                <li><span class="why-icon">✓</span> გარანტირებული ხარისხი</li>
+                <li><span class="why-icon">🔒</span> დაცული გადახდა</li>
+                <li><span class="why-icon">📞</span> 24/7 მხარდაჭერა</li>
+                <li><span class="why-icon">🏍️</span> ტესტ-დრაივის შესაძლებლობა</li>
+                <li><span class="why-icon">⭐</span> 2000+ კმაყოფილი მყიდველი</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card mb-4 price-range-card">
+        <div class="card-body text-center">
+            <h6 class="mb-3">💰 ფასების დიაპაზონი</h6>
+            <div class="price-range-grid">
+                <div class="price-tier">
+                    <div class="price-tier-label">საწყისი</div>
+                    <div class="price-tier-value">₾4,699+</div>
+                </div>
+                <div class="price-tier highlight">
+                    <div class="price-tier-label">საშუალო</div>
+                    <div class="price-tier-value">₾7,000+</div>
+                </div>
+                <div class="price-tier">
+                    <div class="price-tier-label">პრემიუმ</div>
+                    <div class="price-tier-value">₾9,000+</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </aside>
+
+
+
+
+
+
+
+

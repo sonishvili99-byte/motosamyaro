@@ -1,0 +1,156 @@
+﻿@model vroom.Models.Order
+
+@{
+    ViewData["Title"] = $"შეკვეთა #{Model.Id}";
+}
+
+<div class="container mt-4">
+    <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline-secondary mb-3">← მენიუ</a>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">შეკვეთა #@Model.Id</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>თარიღი:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")<br/>
+                            <strong>მომხმარებელი:</strong> @Model.User?.FullName<br/>
+                            <strong>ელფოსტა:</strong> @Model.User?.Email
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h6>შეკვეთის სტატუსი:</h6>
+                            @{
+                                var headerBadge = Model.Status switch
+                                {
+                                    vroom.Models.OrderStatus.Pending    => "bg-warning text-dark",
+                                    vroom.Models.OrderStatus.Processing => "bg-info",
+                                    vroom.Models.OrderStatus.Shipped    => "bg-primary",
+                                    vroom.Models.OrderStatus.Delivered  => "bg-success",
+                                    vroom.Models.OrderStatus.Cancelled  => "bg-danger",
+                                    _                                   => "bg-secondary"
+                                };
+                            }
+                            <span class="badge @headerBadge p-2">@Model.Status</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">შეკვეთის პროდუქტები</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>მოტოციკლი</th>
+                                <th>ფასი</th>
+                                <th>რაოდენობა</th>
+                                <th>სულ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.Motorcycle?.Make @item.Motorcycle?.Model</strong><br/>
+                                        <small class="text-muted">@item.Motorcycle?.Year - @item.Motorcycle?.Category</small>
+                                    </td>
+                                    <td>₾@(item.PriceAtPurchase.ToString("F2"))</td>
+                                    <td>@item.Quantity</td>
+                                    <td>₾@(((item.PriceAtPurchase * item.Quantity)).ToString("F2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-dark text-white">
+                                <th colspan="3" class="text-end">სულ:</th>
+                                <th>₾@(Model.TotalPrice.ToString("F2"))</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">მიტანის მისამართი</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>@Model.User?.FullName</strong><br/>
+                        @Model.User?.Address<br/>
+                        @Model.User?.City @Model.User?.PostalCode<br/>
+                        <strong>ტელ.:</strong> @Model.User?.PhoneNumber
+                    </p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">სტატუსის განახლება</h5>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+                    }
+
+                    @if (Model.Status == vroom.Models.OrderStatus.Pending)
+                    {
+                        <p class="text-muted small mb-2">შემდეგი ნაბიჯები:</p>
+                        <form method="post" asp-action="UpdateOrderStatus" asp-route-id="@Model.Id" class="mb-2">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="status" value="Processing" />
+                            <button type="submit" class="btn btn-info w-100">▶ დამუშავების დაწყება</button>
+                        </form>
+                        <form method="post" asp-action="UpdateOrderStatus" asp-route-id="@Model.Id">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="status" value="Cancelled" />
+                            <button type="submit" class="btn btn-danger w-100"
+                                onclick="return confirm('დარწმუნებული ხართ?');">✕ გაუქმება</button>
+                        </form>
+                    }
+                    else if (Model.Status == vroom.Models.OrderStatus.Processing)
+                    {
+                        <p class="text-muted small mb-2">შემდეგი ნაბიჯი:</p>
+                        <form method="post" asp-action="UpdateOrderStatus" asp-route-id="@Model.Id">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="status" value="Shipped" />
+                            <button type="submit" class="btn btn-primary w-100">📦 გაგზავნა</button>
+                        </form>
+                    }
+                    else if (Model.Status == vroom.Models.OrderStatus.Shipped)
+                    {
+                        <p class="text-muted small mb-2">შემდეგი ნაბიჯი:</p>
+                        <form method="post" asp-action="UpdateOrderStatus" asp-route-id="@Model.Id">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="status" value="Delivered" />
+                            <button type="submit" class="btn btn-success w-100">✓ მიტანილია</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-secondary mb-0 text-center">
+                            <small>შეკვეთა დასრულებულია — სტატუსის ცვლილება შეუძლებელია.</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,63 @@
+﻿@model vroom.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "შემოსვლა";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">მოტო სამყარო - შემოსვლა</h2>
+
+                    @if (ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                foreach (var error in modelState.Errors)
+                                {
+                                    <p>@error.ErrorMessage</p>
+                                }
+                            }
+                        </div>
+                    }
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">ელფოსტა</label>
+                            <input asp-for="Email" type="email" class="form-control" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">პაროლი</label>
+                            <input asp-for="Password" type="password" class="form-control" required />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" type="checkbox" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label">დამიმახსოვრე</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">შემოსვლა</button>
+                    </form>
+
+                    <p class="text-center">
+                        უკვე გაქვთ ანგარიში? 
+                        <a asp-action="Register" asp-controller="Account">რეგისტრაცია</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

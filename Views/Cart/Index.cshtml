@@ -1,0 +1,100 @@
+﻿@model List<vroom.Models.CartItem>
+
+@{
+    ViewData["Title"] = "ჩემი კალათა";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4">🛒 ჩემი კალათა</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <p>თქვენი კალათა ცარიელია.</p>
+            <a href="@Url.Action("Index", "Home")" class="btn btn-primary">მოტოციკლების დათვალიერება</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>მოტოციკლი</th>
+                            <th>ფასი</th>
+                            <th>რაოდენობა</th>
+                            <th>ჯამი</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.Motorcycle?.Make @item.Motorcycle?.Model</strong><br/>
+                                    <small class="text-muted">@item.Motorcycle?.Year</small>
+                                </td>
+                                <td>₾@((item.Motorcycle?.Price ?? 0).ToString("F2"))</td>
+                                <td>
+                                    <form method="post" action="@Url.Action("UpdateQuantity", "Cart")" class="d-flex gap-2">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" max="10" class="form-control" style="width: 70px;" />
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">განახლება</button>
+                                    </form>
+                                </td>
+                                <td>₾@((((item.Motorcycle?.Price ?? 0) * item.Quantity)).ToString("F2"))</td>
+                                <td>
+                                    <form method="post" action="@Url.Action("RemoveFromCart", "Cart")" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="cartItemId" value="@item.Id" />
+                                        <button type="submit" class="btn btn-sm btn-danger">წაშლა</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">შეკვეთის ჯამი</h5>
+                        <hr />
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>ერთეულების რაოდენობა:</span>
+                            <strong>@ViewBag.TotalItems</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>მთლიანი ფასი:</span>
+                            <strong class="text-success">₾@(((decimal)ViewBag.TotalPrice).ToString("F2"))</strong>
+                        </div>
+                        <form method="post" action="@Url.Action("Checkout", "Cart")">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                გაგრძელება გადახდაზე →
+                            </button>
+                        </form>
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary w-100 mt-2">
+                            ↑ განაგრძეთ ყიდვა
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+

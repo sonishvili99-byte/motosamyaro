@@ -1,4 +1,4 @@
-namespace vroom.Models
+﻿namespace vroom.Models
 {
     public class ErrorViewModel
     {
@@ -7,3 +7,4 @@ namespace vroom.Models
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
 }
+

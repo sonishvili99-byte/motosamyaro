@@ -1,0 +1,68 @@
+﻿@model vroom.Models.TestRide
+
+@{
+    ViewData["Title"] = "ტესტ დრაივის დადასტურება";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-lg border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">✓ მოთხოვნა გადაწერილია</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success mb-4">
+                        <p class="mb-0">
+                            <strong>გმადლობთ!</strong> თქვენი ტესტ დრაივის მოთხოვნა წარმატებით გადაწერილია. ჩვენი სპეციალისტი მცირე ხანში დაგიკავშირდება.
+                        </p>
+                    </div>
+
+                    <h6 class="mb-3 fw-bold">მოთხოვნის დეტალები:</h6>
+                    <dl class="row mb-4">
+                        <dt class="col-sm-4">მოთხოვნის ID:</dt>
+                        <dd class="col-sm-8">
+                            <strong>#@Model.Id</strong>
+                        </dd>
+
+                        <dt class="col-sm-4">ტელეფონის ნომერი:</dt>
+                        <dd class="col-sm-8">
+                            <strong>@Model.PhoneNumber</strong>
+                        </dd>
+
+                        <dt class="col-sm-4">სტატუსი:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-warning">@Model.Status</span>
+                        </dd>
+
+                        <dt class="col-sm-4">შექმნილი:</dt>
+                        <dd class="col-sm-8">
+                            @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm:ss")
+                        </dd>
+                    </dl>
+
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">ℹ️ რა მოხდება შემდეგი?</h6>
+                        <ul class="mb-0">
+                            <li>ჩვენი სპეციალისტი 24 საათის განმავლობაში დაგიკავშირდება</li>
+                            <li>დაზუსტდება თქვენი პრეფერენციებები და მოტოციკლის კატეგორია</li>
+                            <li>შეთანხმდება თავისუფალი დღე და დრო ტესტ რაიდისთვის</li>
+                            <li>განიხილდება უსაფრთხოებისა და პირობების პირობები</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">⚠️ მნიშვნელოვანი</h6>
+                        <small>
+                            დარწმუნდით, რომ გაწერილი ტელეფონის ნომერი სწორია. გამოგვიძახოთ მხოლოდ ამ ნომერზე.
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">← მთავარ გვერდზე</a>
+                    <a href="@Url.Action("MyTestRides", "TestRide")" class="btn btn-outline-primary">👀 ჩემი მოთხოვნები</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

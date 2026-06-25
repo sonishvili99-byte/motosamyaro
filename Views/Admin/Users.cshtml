@@ -1,0 +1,73 @@
+﻿
+@model List<vroom.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "მომხმარებლები - ადმინი";
+}
+
+<div class="container-fluid mt-4">
+    <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline-secondary mb-3">← დაშბორდი</a>
+    
+    <h1 class="mb-4">მომხმარებლები</h1>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>სახელი</th>
+                        <th>ელფოსტა</th>
+                        <th>რეგისტრაცია</th>
+                        <th>ტელ.</th>
+                        <th>როლი</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@user.FullName</strong><br/>
+                                <small class="text-muted">ID: @user.Id</small>
+                            </td>
+                            <td>@user.Email</td>
+                            <td>@user.CreatedAt.ToString("dd.MM.yyyy")</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>
+                                @if (user.IsAdmin)
+                                {
+                                    <span class="badge bg-danger">Admin</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">User</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("UserDetails", "Admin", new { id = user.Id })" class="btn btn-sm btn-info">დეტალები</a>
+                                @if (user.IsAdmin)
+                                {
+                                    <form method="post" asp-action="RemoveAdmin" asp-route-id="@user.Id" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('დარწმუნებული ხართ, რომ ართმევთ ადმინისტრატორის უფლებას?')">ადმინის წაშლა</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form method="post" asp-action="MakeAdmin" asp-route-id="@user.Id" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-success">ადმინად დანიშნვა</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

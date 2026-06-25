@@ -1,0 +1,65 @@
+﻿@model List<vroom.Models.TestRide>
+
+@{
+    ViewData["Title"] = "ჩემი ტესტ დრაივის მოთხოვნები";
+}
+
+<div class="container mt-4">
+    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary mb-3">← დაბრუნება</a>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">ჩემი ტესტ დრაივის მოთხოვნები</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Count == 0)
+            {
+                <div class="alert alert-info">
+                    <p class="mb-0">თქვენ ჭერ არ გაქვთ მოთხოვნა ტესტ დრაივისთვის. დაიწყეთ <a href="@Url.Action("About", "Home")">აქაურ</a>!</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>ტელეფონის ნომერი</th>
+                                <th>სტატუსი</th>
+                                <th>შექმნილი</th>
+                                <th>მოქმედება</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var testRide in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@testRide.Id</strong></td>
+                                    <td>@testRide.PhoneNumber</td>
+                                    <td>
+                                        @{
+                                            var badgeClass = testRide.Status switch
+                                            {
+                                                vroom.Models.TestRideStatus.Pending => "bg-warning",
+                                                vroom.Models.TestRideStatus.Confirmed => "bg-success",
+                                                vroom.Models.TestRideStatus.Cancelled => "bg-danger",
+                                                vroom.Models.TestRideStatus.Completed => "bg-info",
+                                                _ => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @badgeClass">@testRide.Status</span>
+                                    </td>
+                                    <td>@testRide.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>
+                                        <a href="@Url.Action("TestRideConfirmation", "TestRide", new { id = testRide.Id })" class="btn btn-sm btn-outline-primary">დეტალურად</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

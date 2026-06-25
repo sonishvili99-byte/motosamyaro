@@ -1,0 +1,75 @@
+﻿@model List<vroom.Models.Order>
+
+@{
+    ViewData["Title"] = "ადმინი - შეკვეთები";
+    var selectedStatus = ViewBag.SelectedStatus as vroom.Models.OrderStatus?;
+}
+
+<div class="container-fluid mt-4">
+    <h1 class="mb-4">ყველა შეკვეთები</h1>
+
+    <div class="mb-3">
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline-secondary">დაშბორდი</a>
+        
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("Orders", "Admin")" class="btn btn-outline-primary @(selectedStatus == null ? "active" : "")">ყველა</a>
+            <a href="@Url.Action("Orders", "Admin", new { status = vroom.Models.OrderStatus.Pending })" class="btn btn-outline-primary @(selectedStatus == vroom.Models.OrderStatus.Pending ? "active" : "")">დასამუშავებელი</a>
+            <a href="@Url.Action("Orders", "Admin", new { status = vroom.Models.OrderStatus.Processing })" class="btn btn-outline-primary @(selectedStatus == vroom.Models.OrderStatus.Processing ? "active" : "")">დამუშავება</a>
+            <a href="@Url.Action("Orders", "Admin", new { status = vroom.Models.OrderStatus.Shipped })" class="btn btn-outline-primary @(selectedStatus == vroom.Models.OrderStatus.Shipped ? "active" : "")">გაგზავნილი</a>
+            <a href="@Url.Action("Orders", "Admin", new { status = vroom.Models.OrderStatus.Delivered })" class="btn btn-outline-primary @(selectedStatus == vroom.Models.OrderStatus.Delivered ? "active" : "")">მიტანილი</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>მომხმარებელი</th>
+                        <th>თარიღი</th>
+                        <th>ერთეულები</th>
+                        <th>ფასი</th>
+                        <th>სტატუსი</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@order.Id</strong></td>
+                                    <td>
+                                        <strong>@order.User?.FullName</strong><br/>
+                                        <small class="text-muted">@order.User?.Email</small>
+                                    </td>
+                                    <td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@order.Items.Count</td>
+                                    <td>₾@(order.TotalPrice.ToString("F2"))</td>
+                                    <td>
+                                        @{
+                                            var listBadge = order.Status switch
+                                            {
+                                                vroom.Models.OrderStatus.Pending    => "bg-warning text-dark",
+                                                vroom.Models.OrderStatus.Processing => "bg-info",
+                                                vroom.Models.OrderStatus.Shipped    => "bg-primary",
+                                                vroom.Models.OrderStatus.Delivered  => "bg-success",
+                                                vroom.Models.OrderStatus.Cancelled  => "bg-danger",
+                                                _                                   => "bg-secondary"
+                                            };
+                                        }
+                                        <span class="badge @listBadge">@order.Status</span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("OrderDetails", "Admin", new { id = order.Id })" class="btn btn-sm btn-primary">დეტალები</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

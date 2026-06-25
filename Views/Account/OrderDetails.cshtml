@@ -1,0 +1,110 @@
+﻿@model vroom.Models.Order
+
+@{
+    ViewData["Title"] = "შეკვეთის დეტალები";
+}
+
+<div class="container mt-4">
+    <a href="@Url.Action("MyOrders", "Account")" class="btn btn-outline-secondary mb-3">← დაბრუნება</a>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">შეკვეთა #@Model.Id</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>თარიღი:</strong> @Model.OrderDate.ToString("dd.MM.yyyy HH:mm")<br />
+                    <strong>მომხმარებელი:</strong> @Model.User?.FullName<br />
+                    <strong>ელფოსტა:</strong> @Model.User?.Email
+                </div>
+                <div class="col-md-6 text-end">
+                    <h6>შეკვეთის სტატუსი:</h6>
+                    @{
+                        var badgeClass = Model.Status switch
+                        {
+                            vroom.Models.OrderStatus.Pending => "bg-warning",
+                            vroom.Models.OrderStatus.Processing => "bg-info",
+                            vroom.Models.OrderStatus.Shipped => "bg-primary",
+                            vroom.Models.OrderStatus.Delivered => "bg-success",
+                            vroom.Models.OrderStatus.Cancelled => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+                    }
+                    <span class="badge @badgeClass p-2">@Model.Status</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>მოტოციკლი</th>
+                            <th>ფასი</th>
+                            <th>რაოდენობა</th>
+                            <th>სულ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@item.Motorcycle?.Make @item.Motorcycle?.Model</strong><br />
+                                    <small class="text-muted">@item.Motorcycle?.Year</small>
+                                </td>
+                                <td>₾@(item.PriceAtPurchase.ToString("F2"))</td>
+                                <td>@item.Quantity</td>
+                                <td>₾@(((item.PriceAtPurchase * item.Quantity)).ToString("F2"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-dark text-white">
+                            <th colspan="3" class="text-end">სულ:</th>
+                            <th>₾@(Model.TotalPrice.ToString("F2"))</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Status == vroom.Models.OrderStatus.Pending)
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">თქვენი შეკვეთა პროცესირდება.</p>
+        </div>
+        <form method="post" asp-controller="Cart" asp-action="CancelOrder" class="d-inline">
+            <input type="hidden" name="orderId" value="@Model.Id" />
+            <button type="submit" class="btn btn-danger">შეკვეთის გაუქმება</button>
+        </form>
+    }
+    else if (Model.Status == vroom.Models.OrderStatus.Processing)
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">თქვენი შეკვეთა დამუშავების პროცესშია. შეკვეთა მალე გაიმოწვევება.</p>
+        </div>
+    }
+    else if (Model.Status == vroom.Models.OrderStatus.Shipped)
+    {
+        <div class="alert alert-info">
+            <p class="mb-0">თქვენი შეკვეთა გაიმოწვა! მალე მივა თქვენთან.</p>
+        </div>
+    }
+    else if (Model.Status == vroom.Models.OrderStatus.Delivered)
+    {
+        <div class="alert alert-success">
+            <p class="mb-0">✓ თქვენი შეკვეთა წარმატებით მიტანილი იყო!</p>
+        </div>
+    }
+    else if (Model.Status == vroom.Models.OrderStatus.Cancelled)
+    {
+        <div class="alert alert-danger">
+            <p class="mb-0">ეს შეკვეთა გაუქმდა.</p>
+        </div>
+    }
+</div>
+
+
+

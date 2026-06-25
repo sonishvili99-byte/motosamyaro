@@ -1,0 +1,39 @@
+﻿@model List<vroom.Models.Order>
+
+@{
+    ViewData["Title"] = "ჩემი შეკვეთები";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">ჩემი შეკვეთები</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">თქვენ ჯერ არ გაქვთ შესყიდვები.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var order in Model)
+            {
+                var badgeClass = order.Status switch
+                {
+                    vroom.Models.OrderStatus.Pending => "bg-warning",
+                    vroom.Models.OrderStatus.Processing => "bg-info",
+                    vroom.Models.OrderStatus.Shipped => "bg-primary",
+                    vroom.Models.OrderStatus.Delivered => "bg-success",
+                    vroom.Models.OrderStatus.Cancelled => "bg-danger",
+                    _ => "bg-secondary"
+                };
+
+                <a href="@Url.Action("OrderDetails", "Account", new { id = order.Id })" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">შეკვეთა #@order.Id</h5>
+                        <small>@order.OrderDate.ToString("dd.MM.yyyy HH:mm")</small>
+                    </div>
+                    <p class="mb-1">გამოჯდება: ₾@(order.TotalPrice.ToString("F2")) — სტატუსი: <span class="badge @badgeClass">@order.Status</span></p>
+                </a>
+            }
+        </div>
+    }
+</div>

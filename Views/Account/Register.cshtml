@@ -1,0 +1,107 @@
+﻿@model vroom.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "რეგისტრაცია";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">მოტო სამყარო - რეგისტრაცია</h2>
+
+                    @if (ViewData.ModelState.Values.Any(v => v.Errors.Any()))
+                    {
+                        <div class="alert alert-danger">
+                            @{
+                                
+                                foreach (var kv in ViewData.ModelState)
+                                {
+                                    var key = kv.Key ?? string.Empty;
+                                    foreach (var error in kv.Value.Errors)
+                                    {
+                                        if (string.Equals(key, "ConfirmPassword", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            <p>პაროლი და დადასტურების პაროლი არ ემთხვევა</p>
+                                        }
+                                        else
+                                        {
+                                            <p>@error.ErrorMessage</p>
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">ელფოსტა</label>
+                            <input asp-for="Email" type="email" class="form-control" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">სახელი და გვარი</label>
+                            <input asp-for="FullName" type="text" class="form-control" required />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">ტელეფონის ნომერი</label>
+                            <input asp-for="PhoneNumber" type="tel" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">მისამართი</label>
+                            <input asp-for="Address" type="text" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="City" class="form-label">ქალაქი</label>
+                                <input asp-for="City" type="text" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PostalCode" class="form-label">საფოსტო კოდი</label>
+                                <input asp-for="PostalCode" type="text" class="form-control" />
+                                <span asp-validation-for="PostalCode" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">პაროლი</label>
+                            <input asp-for="Password" type="password" class="form-control" required />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label">პაროლი ხელახლა</label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" required data-val-equalto="პაროლი და დადასტურების პაროლი არ ემთხვევა" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3">რეგისტრაცია</button>
+                    </form>
+
+                    <p class="text-center">
+                        უკვე გაქვთ ანგარიში? 
+                        <a asp-action="Login" asp-controller="Account">შემოსვლა</a>
+                    </p>
+                </div>
+            </div>      
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
+

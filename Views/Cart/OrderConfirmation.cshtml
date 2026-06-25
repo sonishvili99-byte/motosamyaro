@@ -1,0 +1,96 @@
+﻿
+
+@model vroom.Models.Order
+
+@{
+    ViewData["Title"] = "შეკვეთის დადასტურება";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">✓ შეკვეთა წარმატებით დამტკიცდა!</h4>
+        <p class="mb-0">
+            თქვენი შეკვეთის ნომერი: <strong>#@Model.Id</strong><br />
+            შეკვეთის თარიღი: <strong>@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</strong>
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">შეკვეთის დეტალები</h5>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>მოტოციკლი</th>
+                                <th>ფასი</th>
+                                <th>რაოდენობა</th>
+                                <th>ჯამი</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td><strong>@item.Motorcycle?.Make @item.Motorcycle?.Model</strong></td>
+                                    <td>₾@(item.PriceAtPurchase.ToString("F2"))</td>
+                                    <td>@item.Quantity</td>
+                                    <td>₾@((item.PriceAtPurchase * item.Quantity).ToString("F2"))</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <th colspan="3" class="text-end">მთლიანი:</th>
+                                <th class="text-success">₾@(Model.TotalPrice.ToString("F2"))</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">სტატუსი</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var badgeClass = Model.Status switch
+                        {
+                            vroom.Models.OrderStatus.Pending    => "bg-warning text-dark",
+                            vroom.Models.OrderStatus.Processing => "bg-info",
+                            vroom.Models.OrderStatus.Shipped    => "bg-primary",
+                            vroom.Models.OrderStatus.Delivered  => "bg-success",
+                            vroom.Models.OrderStatus.Cancelled  => "bg-danger",
+                            _                                   => "bg-secondary"
+                        };
+                    }
+                    <p class="mb-2"><strong>ამჟამად:</strong> <span class="badge @badgeClass">@Model.Status</span></p>
+                    <p class="text-muted small mb-0">თქვენ მიიღებთ ელფოსტით შეტყობინებას შეკვეთის დამუშავების შესახებ.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2 flex-wrap">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">მთავარ გვერდზე</a>
+        <a href="@Url.Action("MyOrders", "Account")" class="btn btn-outline-primary">ჩემი შეკვეთები</a>
+        @if (Model.Status == vroom.Models.OrderStatus.Pending)
+        {
+            <form method="post" asp-controller="Cart" asp-action="CancelOrder" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="orderId" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger"
+                    onclick="return confirm('დარწმუნებული ხართ, რომ გსურთ შეკვეთის გაუქმება?');">შეკვეთის გაუქმება</button>
+            </form>
+        }
+    </div>
+</div>
+
+
+

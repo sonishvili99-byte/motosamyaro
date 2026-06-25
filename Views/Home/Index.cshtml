@@ -3,80 +3,33 @@
 @{
     ViewData["Title"] = "მოტო სამყარო";
     var motorcycles = Model as List<vroom.Models.Motorcycle> ?? new();
-    var categories = new[] { "კირშინელი", "სპორტული", "ენდურო", "ბობერი", "სტრიტური" };
+    var categories = new[] { "კრუიზერი", "სპორტი", "ენდურო", "ბობერი", "სტრიტი" };
     var selectedCategory = ViewData["Category"] as string;
+    var searchQuery = ViewData["SearchQuery"] as string;
 }
 
-<style>
-    .hero-banner {
-        position: relative;
-        background-size: cover;
-        background-position: center;
-    }
 
-    .hero-overlay {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 4rem 0;
-        min-height: 320px;
-        background: linear-gradient(180deg, rgba(0,0,0,0.18) 0%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0.08) 100%);
-        overflow: hidden;
-    }
-
-    .hero-overlay::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 50% 35%, rgba(255,255,255,0.06), transparent 25%);
-        pointer-events: none;
-    }
-
-    .hero-overlay .container { position: relative; z-index: 2; }
-
-    .hero-title {
-        font-size: 2.75rem;
-        font-weight: 700;
-        color: #ffffff;
-        text-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
-        margin-bottom: 0.5rem;
-        display: inline-block;
-        padding: 1rem 2rem;
-        background: rgba(0, 0, 0, 0.55);
-        backdrop-filter: blur(5px);
-        border-radius: 10px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    }
-
-    .hero-subtitle {
-        font-size: 1.125rem;
-        color: #ffffff;
-        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
-        display: block;
-        margin-top: 1.2rem;
-        max-width: 900px;
-        margin-left: auto;
-        margin-right: auto;
-        padding: 1.2rem 2rem;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(5px);
-        border-radius: 8px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    @@media (min-width: 992px) {
-        .hero-title { font-size: 3.5rem; }
-        .hero-subtitle { font-size: 1.25rem; }
-    }
-</style>
 
 <div class="hero-banner" style="background-image: url('https://images4.alphacoders.com/119/thumb-1920-1190133.jpg');">
     <div class="hero-overlay">
+        <div id="heroParticles"></div>
         <div class="container text-center text-white">
             <h1 class="hero-title">მოტო სამყარო</h1>
-            <p class="hero-subtitle">გააკეთე შენი ოცნებების წრე — შეიძინე ორბორბლიანი მეგობარი, საუკეთესო ფასებით.</p>
+            <p class="hero-subtitle">გააკეთე შენი ოცნებების წრე - შეიძინე ორბორბლიანი მეგობარი, საუკეთესო ფასებით.</p>
         </div>
+    </div>
+</div>
+
+<!-- Quick stats strip -->
+<div class="stats-strip">
+    <div class="stats-strip-inner">
+        <div class="strip-stat">🏍️ <strong>7</strong> მოტოციკლი</div>
+        <div class="strip-divider"></div>
+        <div class="strip-stat">💰 ფასი <strong>₾4,699</strong>-დან</div>
+        <div class="strip-divider"></div>
+        <div class="strip-stat">🚀 <strong>5</strong> კატეგორია</div>
+        <div class="strip-divider"></div>
+        <div class="strip-stat">✓ უსაფრთხო გადახდა</div>
     </div>
 </div>
 
@@ -86,27 +39,37 @@
             <h1 class="mb-4">შეიძინეთ მოტოციკლი 🏍️</h1>
 
             <div class="mb-5">
-                <h5 class="mb-3">გაფილრტე კატეგორია:</h5>
-                <div class="btn-group flex-wrap" role="group">
-                    <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")">
-                        წელი
-                    </a>
-                    @foreach (var category in categories)
-                    {
-                        <a href="@Url.Action("Category", "Home", new { name = category })" 
-                           class="btn btn-outline-primary @(selectedCategory == category ? "active" : "")">
-                            @category
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h5 class="mb-0" style="white-space: nowrap;">გაფილრტე კატეგორია:</h5>
+                    <div class="btn-group flex-wrap" role="group">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")">
+                            ყველა
                         </a>
-                    }
+                        @foreach (var category in categories)
+                        {
+                            <a href="@Url.Action("Category", "Home", new { name = category })" 
+                               class="btn btn-outline-primary @(selectedCategory == category ? "active" : "")">
+                                @category
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
+
+            @if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                <div class="alert alert-info mb-4 search-results-info">
+                    <strong>ძებნის ფლაფი:</strong> "@searchQuery" — ნაპოვნია <strong>@motorcycles.Count</strong> მოტოციკლი
+                    <a href="@Url.Action("Index", "Home")" class="ms-2">წაშლა</a>
+                </div>
+            }
 
             <div class="row">
                 @if (motorcycles.Count > 0)
                 {
                     foreach (var bike in motorcycles)
                     {
-                        <div class="col-md-6 col-lg-6 col-xl-4 mb-4">
+                        <div class="col-md-6 col-lg-6 col-xl-4 mb-4 reveal">
                             <div class="card h-100 shadow-sm">
                                 <img src="@bike.ImageUrl" class="card-img-top" alt="@bike.Make @bike.Model">
                                 <div class="card-body">
@@ -115,7 +78,7 @@
                                     <p class="card-text">
                                         <span class="badge bg-primary">@bike.Category</span>
                                     </p>
-                                    <h6 class="text-success">₾@bike.Price.ToString("F2")</h6>
+                                    <h6 class="text-success">₾@(bike.Price.ToString("F2"))</h6>
                                 </div>
                                 <div class="card-footer bg-white">
                                     <button class="btn btn-primary btn-sm w-100" data-bs-toggle="modal" data-bs-target="#detailsModal@(bike.Id)">დეტალურად</button>
@@ -148,7 +111,7 @@
                                                     </div>
                                                     <div class="spec-item">
                                                         <div class="spec-label">ფასი</div>
-                                                        <div class="spec-value">₾@bike.Price.ToString("F2")</div>
+                                                        <div class="spec-value">₾@(bike.Price.ToString("F2"))</div>
                                                     </div>
                                                     <div class="spec-item">
                                                         <div class="spec-label">მწარმოებელი</div>
@@ -180,13 +143,26 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">დახურვა</button>
-                                        <button type="button" class="btn btn-primary">შეძეთა</button>
+                                        @if (User.Identity?.IsAuthenticated ?? false)
+                                        {
+                                            <!-- Use explicit action URL to avoid routing/taghelper mismatches -->
+                                            <form method="post" action="/Cart/AddToCart" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="motorcycleId" value="@bike.Id" />
+                                                <input type="hidden" name="quantity" value="1" />
+                                                <button type="submit" class="btn btn-primary">🛒 კალათში დამატება</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("Login", "Account")" class="btn btn-primary">🔐 შემოსვლა და ყიდვა</a>
+                                        }
                                     </div>
                                 </div>
                             </div>
                         </div>
                     }
-                }
+                }                       
                 else
                 {
                     <div class="col-12">
@@ -203,3 +179,6 @@
         </div>
     </div>
 </div>
+
+
+
