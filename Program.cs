@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using vroom.Data;
 using vroom.Models;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,10 +17,27 @@ Console.InputEncoding = Encoding.UTF8;
 
 // Add Database Context
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Server=(localdb)\\mssqllocaldb;Database=VroomDb;Trusted_Connection=true;";
+    ?? "Data Source=vroom.db";
+
+// On Render, DATABASE_URL is set automatically for PostgreSQL add-ons.
+// Locally, fall back to SQLite.
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+{
+    if (!string.IsNullOrEmpty(databaseUrl))
+    {
+        // Parse Render's postgres:// URL into a Npgsql connection string
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        var npgsqlConn = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        options.UseNpgsql(npgsqlConn);
+    }
+    else
+    {
+        options.UseSqlite(connectionString);
+    }
+});
 
 // Add Identity services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

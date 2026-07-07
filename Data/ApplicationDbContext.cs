@@ -23,20 +23,24 @@ namespace vroom.Data
         {
             base.OnModelCreating(builder);
 
-            // Store List<string> as JSON text in SQLite
-            var galleryConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<List<string>, string>(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
-            );
-            var galleryComparer = new ValueComparer<List<string>>(
-                (c1, c2) => JsonSerializer.Serialize(c1, (JsonSerializerOptions?)null) == JsonSerializer.Serialize(c2, (JsonSerializerOptions?)null),
-                c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                c => JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)!
-            );
-            builder.Entity<Motorcycle>()
-                .Property(m => m.GalleryImages)
-                .HasConversion(galleryConverter)
-                .Metadata.SetValueComparer(galleryComparer);
+            // Store List<string> as JSON text in SQLite only
+            // (PostgreSQL has native array support and handles it automatically)
+            if (Database.IsSqlite())
+            {
+                var galleryConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<List<string>, string>(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                    v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>()
+                );
+                var galleryComparer = new ValueComparer<List<string>>(
+                    (c1, c2) => JsonSerializer.Serialize(c1, (JsonSerializerOptions?)null) == JsonSerializer.Serialize(c2, (JsonSerializerOptions?)null),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(c, (JsonSerializerOptions?)null), (JsonSerializerOptions?)null)!
+                );
+                builder.Entity<Motorcycle>()
+                    .Property(m => m.GalleryImages)
+                    .HasConversion(galleryConverter)
+                    .Metadata.SetValueComparer(galleryComparer);
+            }
 
             // Configure decimal precision for Price properties
             builder.Entity<Motorcycle>()
