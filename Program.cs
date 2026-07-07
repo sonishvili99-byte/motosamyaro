@@ -27,10 +27,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     if (!string.IsNullOrEmpty(databaseUrl))
     {
-        // Parse Render's postgres:// URL into a Npgsql connection string
+        // Parse Render's postgresql:// URL into an Npgsql connection string.
+        // Split(':',2) keeps passwords that contain ':' intact.
+        // Port defaults to 5432 when not present in the URL (uri.Port == -1).
         var uri = new Uri(databaseUrl);
-        var userInfo = uri.UserInfo.Split(':');
-        var npgsqlConn = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        var userInfo = uri.UserInfo.Split(':', 2);
+        var host     = uri.Host;
+        var port     = uri.Port > 0 ? uri.Port : 5432;
+        var database = uri.AbsolutePath.TrimStart('/');
+        var username = userInfo[0];
+        var password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+        var npgsqlConn = $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
         options.UseNpgsql(npgsqlConn);
     }
     else
