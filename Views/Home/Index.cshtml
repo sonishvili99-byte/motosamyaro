@@ -23,7 +23,8 @@
 <!-- Quick stats strip -->
 <div class="stats-strip">
     <div class="stats-strip-inner">
-        <div class="strip-stat">🏍️ <strong>7</strong> მოტოციკლი</div>
+        @{ var totalMotorcycles = (int?)(ViewData["TotalMotorcycles"]) ?? (ViewData["AllMotorcycles"] as List<vroom.Models.Motorcycle>)?.Count ?? motorcycles.Count; }
+        <div class="strip-stat">🏍️ <strong>@totalMotorcycles</strong> მოტოციკლი</div>
         <div class="strip-divider"></div>
         <div class="strip-stat">💰 ფასი <strong>₾4,699</strong>-დან</div>
         <div class="strip-divider"></div>

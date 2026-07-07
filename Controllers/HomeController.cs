@@ -18,6 +18,7 @@ namespace vroom.Controllers
         {
             var motorcycles = await _context.Motorcycles.ToListAsync();
             ViewData["AllMotorcycles"] = motorcycles;
+            ViewData["TotalMotorcycles"] = await _context.Motorcycles.CountAsync();
             return View(motorcycles);
         }
 
@@ -27,6 +28,7 @@ namespace vroom.Controllers
             var motorcycles = allMotorcycles.Where(m => m.Category == name).ToList();
             ViewData["Category"] = name;
             ViewData["AllMotorcycles"] = allMotorcycles;
+            ViewData["TotalMotorcycles"] = await _context.Motorcycles.CountAsync();
             return View("Index", motorcycles);
         }
 
@@ -45,6 +47,7 @@ namespace vroom.Controllers
 
             ViewData["SearchQuery"] = query;
             ViewData["AllMotorcycles"] = allMotorcycles;
+            ViewData["TotalMotorcycles"] = await _context.Motorcycles.CountAsync();
             return View("Index", motorcycles);
         }
 
@@ -62,6 +65,7 @@ namespace vroom.Controllers
 
             ViewData["AllMotorcycles"] = allMotorcycles;
             ViewData["SelectedCategory"] = category;
+            ViewData["TotalMotorcycles"] = await _context.Motorcycles.CountAsync();
             return View(motorcycles);
         }
     }
