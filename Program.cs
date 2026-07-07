@@ -82,8 +82,9 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var context = services.GetRequiredService<ApplicationDbContext>();
-        // Auto-apply migrations on startup (creates SQLite DB if it doesn't exist)
-        context.Database.Migrate();
+        // EnsureCreated is safe for both SQLite and PostgreSQL:
+        // creates tables if they don't exist, does nothing if they do.
+        context.Database.EnsureCreated();
         var config = services.GetRequiredService<IConfiguration>();
 
         // Seed motorcycles if they don't exist
@@ -279,9 +280,11 @@ using (var scope = app.Services.CreateScope())
             }
         }
     }
-    catch
+    catch (Exception ex)
     {
-        // seeding should not crash the app on startup in development
+        // Log startup errors to console so they appear in Render's log viewer
+        Console.WriteLine($"[STARTUP ERROR] {ex.Message}");
+        Console.WriteLine(ex.StackTrace);
     }
 }
 
