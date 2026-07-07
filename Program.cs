@@ -19,7 +19,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? "Server=(localdb)\\mssqllocaldb;Database=VroomDb;Trusted_Connection=true;";
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 
 // Add Identity services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -57,6 +57,8 @@ using (var scope = app.Services.CreateScope())
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
         var context = services.GetRequiredService<ApplicationDbContext>();
+        // Auto-apply migrations on startup (creates SQLite DB if it doesn't exist)
+        context.Database.Migrate();
         var config = services.GetRequiredService<IConfiguration>();
 
         // Seed motorcycles if they don't exist
@@ -92,12 +94,12 @@ using (var scope = app.Services.CreateScope())
                     Year = 2025, 
                     Category = "სპორტი",
                     Price = 6799m, 
-                    ImageUrl = "https://cdn.dealerspike.com/imglib/v1/800x600/imglib/trimsdb/23420811-10978891-138508541.png",
+                    ImageUrl = "https://rbsyamaha.co.za/cdn/shop/files/2024-Yamaha-YZF700R7-EU-Midnight_Black-Studio-001-03.jpg?v=1769714875",
                     GalleryImages = new List<string>
                     {
-                        "https://cdn.dealerspike.com/imglib/v1/800x600/imglib/trimsdb/23420811-10978891-138508541.png",
+                        "https://ridermagazine.com/wp-content/uploads/2021/05/2022-Yamaha-YZF-R7-review-statics-wheel-768x512.jpg",
                         "https://cdn-tp3.mozu.com/27878-44719/cms/files/1f232144-f871-488e-8fb4-86c76f02295c?_mzcb=_1750240705528&width=1009&quality=70",
-                        "https://cdn.dealerspike.com/imglib/v1/800x600/imglib/Assets/Inventory/9F/54/9F54DD8B-80D2-4157-AD3D-E03BEC9485CC.jpg",
+                        "https://ridermagazine.com/wp-content/uploads/2021/05/2022-Yamaha-YZF-R7-review-statics-beautyR.jpg",
                         "https://cdpcdn.dx1app.com/products/USA/YA/2025/MC/SPORT/YZF-R7/50/MATTE_RAVEN_BLACK/2000000014.jpg"
                     },
                     Engine = "689cc Parallel Twin",

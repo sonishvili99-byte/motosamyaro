@@ -1,0 +1,10 @@
+﻿services:
+  - type: web
+    name: vroom
+    runtime: docker
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ConnectionStrings__DefaultConnection
+        value: Data Source=/app/vroom.db

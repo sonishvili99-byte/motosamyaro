@@ -31,9 +31,13 @@ namespace vroom.Controllers
             var pendingOrders = await _context.Orders
                 .Where(o => o.Status == OrderStatus.Pending)
                 .CountAsync();
-            var totalRevenue = await _context.Orders
+
+            // SQLite stores decimal as TEXT, so Sum must run in-memory
+            var totalRevenue = (await _context.Orders
                 .Where(o => o.Status != OrderStatus.Cancelled)
-                .SumAsync(o => o.TotalPrice);
+                .Select(o => o.TotalPrice)
+                .ToListAsync())
+                .Sum();
 
             ViewBag.TotalOrders = totalOrders;
             ViewBag.TotalUsers = totalUsers;
